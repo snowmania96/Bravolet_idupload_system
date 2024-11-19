@@ -12,6 +12,7 @@ export default function PageNotFound() {
               Oops! The page you are looking for does not exist. It might have
               been moved or deleted.
             </p>
+            <p>You can upload once or before the next day of check in date.</p>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import state from "../scenes/idupload/stati.json";
 import comuni from "../scenes/idupload/comuni.json";
 import { Box } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -22,6 +23,7 @@ export default function UploadForm({
     "Trascina e rilascia il file qui oppure fai clic per selezionare il file"
   );
   const [checkbox, setCheckbox] = useState(false);
+  const matches = useMediaQuery("(min-width: 1000px)");
 
   const onDrop = (files) => {
     if (files.length > 0) {
@@ -197,20 +199,32 @@ export default function UploadForm({
                     <div style={{ fontSize: "20px" }}>{text}</div>
                   )}
                 </div>
-                <div className="form-group mt-3">
+                <div className="form-group mt-5">
                   <div className="form-check">
                     <input
-                      className="form-check-input"
+                      className="form-check-input mr-2"
                       type="checkbox"
                       checked={checkbox}
                       value={checkbox}
-                      size={"large"}
                       onChange={() => setCheckbox(!checkbox)}
-                      style={{ marginTop: "6px" }}
+                      style={
+                        matches
+                          ? {
+                              marginTop: "8px",
+                              width: "17px",
+                              height: "17px",
+                              cursor: "pointer",
+                            }
+                          : {
+                              marginTop: "6px",
+                              width: "15px",
+                              height: "15px",
+                            }
+                      }
                       required
                     />
                     <div
-                      style={{ fontSize: "16px" }}
+                      className="rentalAgreement ml-1"
                       onClick={() => setCheckbox(!checkbox)}
                     >
                       Accetto il{" "}
@@ -232,11 +246,14 @@ export default function UploadForm({
                       backgroundColor: "#00756a",
                       color: "white",
                       width: "100%",
-                      height: "40px",
+                      height: "45px",
+                      fontSize: "18px",
                     }}
                     onClick={upload}
                   >
-                    Caricamento
+                    {!selectedFiles || !checkbox || loading
+                      ? "Accetta il contratto per continuare"
+                      : "Caricamento"}
                   </button>
                 </aside>
               </section>

@@ -75,7 +75,8 @@ export default function Idupload() {
       const response = await axios.get(`${REACT_APP_BASE_URL}/idupload/${id}`);
       setReservationInfo(response.data);
     } catch (err) {
-      return navigate("/idupload/pagenotfound");
+      console.log(err);
+      return navigate("/pagenotfound");
     }
   };
   return (
