@@ -7,15 +7,19 @@
     "@mui/icons-material": "^6.1.1",
     "@mui/material": "^6.1.1",
     "@mui/x-date-pickers": "^7.22.0",
+    "axios": "^1.7.7",
     "cra-template": "1.2.0",
     "dayjs": "^1.11.13",
+    "i18next": "^23.16.8",
+    "i18next-browser-languagedetector": "^8.0.0",
+    "i18next-http-backend": "^3.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-dropzone": "^14.2.10",
+    "react-i18next": "^15.1.1",
     "react-router-dom": "^6.28.0",
     "react-scripts": "5.0.1",
-    "axios": "^1.7.7",
-    "react-toastify": "^10.0.5",
-    "react-dropzone": "^14.2.10"
+    "react-toastify": "^10.0.5"
   },
   "scripts": {
     "start": "react-scripts start",

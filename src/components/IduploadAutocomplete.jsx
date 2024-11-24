@@ -64,11 +64,12 @@ export default function IduploadAutocomplete({
         open={open}
         value={value}
         onChange={(e, newValue) => {
-          setGroupInfo((prevGroupInfo) =>
-            prevGroupInfo.map((member, index) =>
-              index === id ? { ...member, [name]: newValue } : member
-            )
-          );
+          setGroupInfo((prevGroupInfo) => {
+            const updatedGroupInfo = [...prevGroupInfo];
+            updatedGroupInfo[id][name] = newValue;
+            localStorage.setItem("groupInfo", JSON.stringify(updatedGroupInfo)); // Save to localStorage
+            return updatedGroupInfo;
+          });
         }}
         onOpen={handleOpen}
         onClose={handleClose}

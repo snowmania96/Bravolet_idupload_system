@@ -17,11 +17,12 @@ export default function IduploadSelectField({
         value={value}
         color="default"
         onChange={(e) => {
-          setGroupInfo((prevGroupInfo) =>
-            prevGroupInfo.map((member, index) =>
-              index === id ? { ...member, [name]: e.target.value } : member
-            )
-          );
+          setGroupInfo((prevGroupInfo) => {
+            const updatedGroupInfo = [...prevGroupInfo];
+            updatedGroupInfo[id][name] = e.target.value;
+            localStorage.setItem("groupInfo", JSON.stringify(updatedGroupInfo)); // Save to localStorage
+            return updatedGroupInfo;
+          });
         }}
         size="small"
         fullWidth

@@ -49,11 +49,15 @@ export default function IduploadInputField({
           name={name}
           value={value}
           onChange={(e) => {
-            setGroupInfo((prevGroupInfo) =>
-              prevGroupInfo.map((member, index) =>
-                index === id ? { ...member, [name]: e.target.value } : member
-              )
-            );
+            setGroupInfo((prevGroupInfo) => {
+              const updatedGroupInfo = [...prevGroupInfo];
+              updatedGroupInfo[id][name] = e.target.value;
+              localStorage.setItem(
+                "groupInfo",
+                JSON.stringify(updatedGroupInfo)
+              ); // Save to localStorage
+              return updatedGroupInfo;
+            });
           }}
           required
           color="default"

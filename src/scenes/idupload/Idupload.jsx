@@ -40,17 +40,30 @@ export default function Idupload() {
     placeOfReleaseDocument: { Descrizione: "" },
   };
   const [idUploaded, setIdUploaded] = useState(false);
-  const [groupInfo, setGroupInfo] = useState([memberInfo]);
+  const [groupInfo, setGroupInfo] = useState(() => {
+    const savedData = localStorage.getItem("groupInfo");
+    if (savedData) {
+      const temp = JSON.parse(savedData);
+      for (let i = 0; i < temp.length; i++) {
+        temp[i].dateOfBirth = dayjs(temp[i].dateOfBirth);
+      }
+      return temp;
+    } else {
+      return [memberInfo];
+    }
+  });
   const [submitText, setSubmitText] = useState("Submit");
   const [reservationInfo, setReservationInfo] = useState({});
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
+  const [location, setLocation] = useState("Italy");
 
   //Set media query
   const matches = useMediaQuery("(min-width: 1000px)");
   const onClickSubmitButton = async (e) => {
     setSubmitText("Submitting...");
+    localStorage.removeItem("groupInfo");
     e.preventDefault();
     try {
       const response = await axios.post(
@@ -68,19 +81,66 @@ export default function Idupload() {
 
   useEffect(() => {
     fetchReservationInfo();
+    const savedData = localStorage.getItem("groupInfo");
+    if (savedData) setIdUploaded(true);
   }, []);
+
+  useEffect(() => {
+    googleTranslateElementInit();
+  }, [location]);
+
+  useEffect(() => {
+    localStorage.setItem("groupInfo", JSON.stringify(groupInfo));
+  }, [groupInfo]);
+
+  const googleTranslateElementInit = () => {
+    if (window.google && window.google.translate) {
+      // Initialize Google Translate widget
+      const translateElement = new window.google.translate.TranslateElement(
+        {
+          pageLanguage: "it", // Source language (Italian)
+          includedLanguages: "en,it", // Include English and Italian for translation
+          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE, // Simple dropdown layout
+        },
+        "google_translate_element"
+      );
+
+      // Programmatically select English as the language after initialization
+      const interval = setInterval(() => {
+        const iframe = document.querySelector("iframe.goog-te-menu-frame"); // Find the iframe containing the language menu
+        if (iframe) {
+          const doc = iframe.contentWindow.document; // Access the iframe's document
+          const langSelector = doc.querySelector(
+            ".goog-te-menu2-item span.text"
+          ); // Find the language item text
+
+          if (langSelector && langSelector.innerText === "English") {
+            // If English is found, simulate a click on it
+            langSelector.click();
+            clearInterval(interval); // Stop the interval after the language is set
+          }
+        }
+      }, 100); // Check every 100ms until the iframe is loaded and the language is available
+    }
+  };
 
   const fetchReservationInfo = async () => {
     try {
       const response = await axios.get(`${REACT_APP_BASE_URL}/idupload/${id}`);
-      setReservationInfo(response.data);
+      const location = response.data.location;
+      console.log(location);
+      if (location !== "Italy") setLocation(location);
+      setReservationInfo(response.data.reservationInfo);
     } catch (err) {
       console.log(err);
       return navigate("/pagenotfound");
     }
   };
+
+  console.log(groupInfo);
   return (
     <div>
+      <div id="google_translate_element" style={{ display: "none" }}></div>
       <div
         className="jumbotron text-center w-100"
         style={{ textAlign: "center", height: "250px" }}
@@ -150,18 +210,6 @@ export default function Idupload() {
                       <div className="d-flex flex-row justify-content-between">
                         <div className="mr-1 w-100">
                           <IduploadInputField
-                            name={"surname"}
-                            fieldName={"Cognome"}
-                            id={id}
-                            value={groupInfo[id].surname}
-                            setGroupInfo={setGroupInfo}
-                            tooltipTitle={
-                              "Cognome, rispettare i caratteri previsti"
-                            }
-                          />
-                        </div>
-                        <div className="mr-1 w-100">
-                          <IduploadInputField
                             name={"givenname"}
                             fieldName={"Nome"}
                             value={groupInfo[id].givenname}
@@ -169,6 +217,18 @@ export default function Idupload() {
                             setGroupInfo={setGroupInfo}
                             tooltipTitle={
                               "Nome, rispettare i caratteri previsti"
+                            }
+                          />
+                        </div>
+                        <div className="mr-1 w-100">
+                          <IduploadInputField
+                            name={"surname"}
+                            fieldName={"Cognome"}
+                            id={id}
+                            value={groupInfo[id].surname}
+                            setGroupInfo={setGroupInfo}
+                            tooltipTitle={
+                              "Cognome, rispettare i caratteri previsti"
                             }
                           />
                         </div>

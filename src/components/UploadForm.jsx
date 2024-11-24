@@ -239,7 +239,37 @@ export default function UploadForm({
                   </div>
                 </div>
                 <aside className="selected-file-wrapper">
-                  <button
+                  {!selectedFiles || !checkbox || loading ? (
+                    <button
+                      className="btn"
+                      disabled="true"
+                      style={{
+                        backgroundColor: "#a9bab8",
+                        color: "white",
+                        width: "100%",
+                        height: "45px",
+                        fontSize: "18px",
+                      }}
+                      onClick={upload}
+                    >
+                      Accetta il contratto per continuare
+                    </button>
+                  ) : (
+                    <button
+                      className="btn"
+                      style={{
+                        backgroundColor: "#00756a",
+                        color: "white",
+                        width: "100%",
+                        height: "45px",
+                        fontSize: "18px",
+                      }}
+                      onClick={upload}
+                    >
+                      Caricamento
+                    </button>
+                  )}
+                  {/* <button
                     className="btn"
                     disabled={!selectedFiles || !checkbox || loading}
                     style={{
@@ -254,7 +284,7 @@ export default function UploadForm({
                     {!selectedFiles || !checkbox || loading
                       ? "Accetta il contratto per continuare"
                       : "Caricamento"}
-                  </button>
+                  </button> */}
                 </aside>
               </section>
             )}
