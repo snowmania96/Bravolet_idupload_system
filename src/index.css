@@ -223,7 +223,89 @@ body,
   cursor: pointer;
 }
 
+.Modal {
+  position: fixed;
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  align-items: center;
+}
+
+.Modal-Background {
+  position: fixed;
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.Modal-Content {
+  position: relative;
+  z-index: 1050;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%;
+  margin-top: 300px;
+  border-radius: 0.3rem;
+}
+
+.Modal-Body {
+  position: relative;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  padding: 1rem;
+}
+
+.Modal-Footer {
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+  padding: 0.75rem;
+  border-top: 1px solid #dee2e6;
+  border-bottom-right-radius: calc(0.3rem - 1px);
+  border-bottom-left-radius: calc(0.3rem - 1px);
+}
+
+.Modal-Header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: end;
+  border-top-left-radius: calc(-1px + 0.3rem);
+  border-top-right-radius: calc(-1px + 0.3rem);
+  border-bottom: 1px solid rgb(222, 226, 230);
+}
+
+.Close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.Close:hover,
+.Close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 @media screen and (max-width: 1000px) {
+  .Modal-Content {
+    width: 95%;
+  }
   .rentalAgreement {
     font-size: 18px;
   }
