@@ -97,7 +97,9 @@ export default function RentalAgreement() {
       );
       const string = response.data.split("\n");
       setText(string);
-      const result = await axios.get(`${REACT_APP_BASE_URL}/idupload/${id}`);
+      const result = await axios.get(
+        `${REACT_APP_BASE_URL}/idupload/get/${id}`
+      );
       console.log(result.data);
       const location = result.data.location;
       if (location !== "Italy") setLocation(location);

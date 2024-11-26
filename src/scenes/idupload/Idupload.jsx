@@ -165,7 +165,9 @@ export default function Idupload() {
 
   const fetchReservationInfo = async () => {
     try {
-      const response = await axios.get(`${REACT_APP_BASE_URL}/idupload/${id}`);
+      const response = await axios.get(
+        `${REACT_APP_BASE_URL}/idupload/get/${id}`
+      );
       const location = response.data.location;
       console.log(location);
       if (location !== "Italy") setLocation(location);
