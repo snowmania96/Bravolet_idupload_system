@@ -456,6 +456,49 @@ export default function Idupload() {
           </div>
         )}
       </div>
+      {modal && (
+        <div className="Modal">
+          <div
+            className="Modal-Background"
+            onClick={() => setModal(false)}></div>
+          <div className="Modal-Content text-center">
+            <div className="Modal-Header">
+              <span className="Close" onClick={() => setModal(false)}>
+                &times;
+              </span>
+            </div>
+
+            <div className="Modal-Body">
+              <h4 className="mt-4">
+                Sei sicuro di aver aggiunto tutti gli invitati a questo modulo?
+              </h4>
+            </div>
+
+            <div className="Modal-Footer mt-2">
+              <button
+                className="btn mr-2 mt-2"
+                style={{
+                  width: "75px",
+                  backgroundColor: "#00756a",
+                  color: "white",
+                }}
+                onClick={onClickYesButton}>
+                SÌ
+              </button>
+              <button
+                className="btn ml-2 mt-2"
+                style={{
+                  width: "75px",
+                  backgroundColor: "#6c757d",
+                  color: "white",
+                }}
+                onClick={() => setModal(false)}>
+                NO
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <ToastContainer />
     </div>
   );
