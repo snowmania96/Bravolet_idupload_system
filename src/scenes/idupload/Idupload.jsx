@@ -136,13 +136,19 @@ export default function Idupload() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [location, setLocation] = useState("Italy");
+  const [modal, setModal] = useState(false);
 
   //Set media query
   const matches = useMediaQuery("(min-width: 1000px)");
   const onClickSubmitButton = async (e) => {
+    e.preventDefault();
+    setModal(true);
+  };
+
+  const onClickYesButton = async () => {
     setSubmitText("Submitting...");
     localStorage.removeItem("groupInfo");
-    e.preventDefault();
+    setModal(false);
     try {
       const response = await axios.post(
         `${REACT_APP_BASE_URL}/idupload/input/${id}`,
@@ -166,7 +172,7 @@ export default function Idupload() {
   const fetchReservationInfo = async () => {
     try {
       const response = await axios.get(
-        `${REACT_APP_BASE_URL}/idupload/get/${id}`
+        `${REACT_APP_BASE_URL}/idupload/fetch/${id}`
       );
       const location = response.data.location;
       console.log(location);
@@ -450,6 +456,49 @@ export default function Idupload() {
           </div>
         )}
       </div>
+      {modal && (
+        <div className="Modal">
+          <div
+            className="Modal-Background"
+            onClick={() => setModal(false)}></div>
+          <div className="Modal-Content text-center">
+            <div className="Modal-Header">
+              <span className="Close" onClick={() => setModal(false)}>
+                &times;
+              </span>
+            </div>
+
+            <div className="Modal-Body">
+              <h4 className="mt-4">
+                Sei sicuro di aver aggiunto tutti gli invitati a questo modulo?
+              </h4>
+            </div>
+
+            <div className="Modal-Footer mt-2">
+              <button
+                className="btn mr-2 mt-2"
+                style={{
+                  width: "75px",
+                  backgroundColor: "#00756a",
+                  color: "white",
+                }}
+                onClick={onClickYesButton}>
+                SÌ
+              </button>
+              <button
+                className="btn ml-2 mt-2"
+                style={{
+                  width: "75px",
+                  backgroundColor: "#6c757d",
+                  color: "white",
+                }}
+                onClick={() => setModal(false)}>
+                NO
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <ToastContainer />
     </div>
   );
