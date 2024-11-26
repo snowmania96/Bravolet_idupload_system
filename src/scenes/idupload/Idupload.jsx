@@ -1,5 +1,5 @@
 import { Avatar, Button, Divider, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import IduploadAutocomplete from "../../components/IduploadAutocomplete";
 import IduploadInputField from "../../components/IduploadInputField";
 import IduploadSelectField from "../../components/IduploadSelectField";
@@ -25,6 +25,84 @@ import { toast, ToastContainer } from "react-toastify";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
+
+const GoogleTranslate = (country) => {
+  const isInitialized = useRef(false); // Keeps track of whether Google Translate has been initialized
+
+  useEffect(() => {
+    // // Function to check if the user is in Italy
+    // const isUserInItaly = () => {
+    //   const userLanguage = navigator.language || navigator.userLanguage; // Get browser language
+    //   return userLanguage.startsWith("it"); // Italian (either 'it' or 'it-IT')
+    // };
+
+    // If the Google Translate script is already loaded and initialized, do nothing
+    if (isInitialized.current) return;
+
+    // Check if user is not in Italy
+    if (country !== "Italy") {
+      // Dynamically load the Google Translate script
+      const script = document.createElement("script");
+      script.src =
+        "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.async = true;
+
+      // Callback to initialize Google Translate widget
+      script.onload = () => {
+        window.googleTranslateElementInit = () => {
+          const translateElement = new window.google.translate.TranslateElement(
+            {
+              pageLanguage: "it", // Default language (Italian)
+              includedLanguages: "en,it", // Available languages (English and Italian)
+              layout:
+                window.google.translate.TranslateElement.InlineLayout.SIMPLE, // Dropdown layout
+              autoDisplay: false, // Do not display the widget automatically
+            },
+            "google_translate_element"
+          );
+
+          // Automatically trigger translation to English
+          setTimeout(() => {
+            const iframe = document.querySelector(
+              "iframe.VIpgJd-ZVi9od-xl07Ob-OEVmcd"
+            );
+            if (iframe) {
+              const doc = iframe.contentWindow.document;
+              const langSelector = doc.querySelector(
+                "a.VIpgJd-ZVi9od-vH1Gmf-ibnC6b span.text"
+              );
+              console.log(langSelector);
+              langSelector.click();
+            }
+          }, 3000); // Give it time to load fully
+        };
+      };
+
+      // Handle script load error
+      script.onerror = (err) => {
+        console.error("Google Translate script failed to load", err);
+      };
+
+      // Append the script to the document body
+      document.body.appendChild(script);
+    }
+
+    // Mark Google Translate as initialized
+    isInitialized.current = true;
+
+    // Cleanup function: remove the script when the component unmounts
+    return () => {
+      const scriptTags = document.querySelectorAll(
+        'script[src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"]'
+      );
+      scriptTags.forEach((scriptTag) => scriptTag.remove());
+    };
+  }, []); // Empty dependency array ensures this effect runs only once
+
+  return (
+    <div id="google_translate_element" style={{ display: "none" }}></div> // This is where the widget will appear (hidden by default)
+  );
+};
 
 export default function Idupload() {
   //Individual memberInfo
@@ -85,45 +163,6 @@ export default function Idupload() {
     if (savedData) setIdUploaded(true);
   }, []);
 
-  useEffect(() => {
-    googleTranslateElementInit();
-  }, [location]);
-
-  useEffect(() => {
-    localStorage.setItem("groupInfo", JSON.stringify(groupInfo));
-  }, [groupInfo]);
-
-  const googleTranslateElementInit = () => {
-    if (window.google && window.google.translate) {
-      // Initialize Google Translate widget
-      const translateElement = new window.google.translate.TranslateElement(
-        {
-          pageLanguage: "it", // Source language (Italian)
-          includedLanguages: "en,it", // Include English and Italian for translation
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE, // Simple dropdown layout
-        },
-        "google_translate_element"
-      );
-
-      // Programmatically select English as the language after initialization
-      const interval = setInterval(() => {
-        const iframe = document.querySelector("iframe.goog-te-menu-frame"); // Find the iframe containing the language menu
-        if (iframe) {
-          const doc = iframe.contentWindow.document; // Access the iframe's document
-          const langSelector = doc.querySelector(
-            ".goog-te-menu2-item span.text"
-          ); // Find the language item text
-
-          if (langSelector && langSelector.innerText === "English") {
-            // If English is found, simulate a click on it
-            langSelector.click();
-            clearInterval(interval); // Stop the interval after the language is set
-          }
-        }
-      }, 100); // Check every 100ms until the iframe is loaded and the language is available
-    }
-  };
-
   const fetchReservationInfo = async () => {
     try {
       const response = await axios.get(`${REACT_APP_BASE_URL}/idupload/${id}`);
@@ -133,6 +172,14 @@ export default function Idupload() {
       setReservationInfo(response.data.reservationInfo);
     } catch (err) {
       console.log(err);
+      if (err.response.data === "You can upload once") {
+        return navigate("/uploaded");
+      }
+      if (
+        err.response.data === "You can upload before the next day of check in"
+      ) {
+        return navigate("/expirated");
+      }
       return navigate("/pagenotfound");
     }
   };
@@ -140,11 +187,10 @@ export default function Idupload() {
   console.log(groupInfo);
   return (
     <div>
-      <div id="google_translate_element" style={{ display: "none" }}></div>
+      <GoogleTranslate country={location} />
       <div
         className="jumbotron text-center w-100"
-        style={{ textAlign: "center", height: "250px" }}
-      >
+        style={{ textAlign: "center", height: "250px" }}>
         <Typography className="mt-1" variant="h1">
           Verifica dell'identità
         </Typography>
@@ -157,8 +203,7 @@ export default function Idupload() {
       </div>
       <div
         className="container"
-        style={matches ? { width: "700px" } : { width: "100%" }}
-      >
+        style={matches ? { width: "700px" } : { width: "100%" }}>
         {!loading ? (
           <form className="was-validated" onSubmit={onClickSubmitButton}>
             {idUploaded ? (
@@ -177,8 +222,7 @@ export default function Idupload() {
                                   index === 0 ? memberInfo : member
                                 )
                               );
-                            }}
-                          >
+                            }}>
                             <CleaaningServicesIcon /> Chiara
                           </Button>
                         </div>
@@ -194,8 +238,7 @@ export default function Idupload() {
                                   (member, index) => index !== id
                                 )
                               );
-                            }}
-                          >
+                            }}>
                             <DeleteIcon /> Eliminare
                           </Button>
                         </div>
@@ -241,8 +284,7 @@ export default function Idupload() {
                               components={["DatePicker"]}
                               sx={{
                                 paddingTop: "-8px",
-                              }}
-                            >
+                              }}>
                               <DemoItem>
                                 <label className="form-label">
                                   {"Data Nascita"}
@@ -321,8 +363,7 @@ export default function Idupload() {
                               matches
                                 ? "d-flex flex-row justify-content-between"
                                 : "d-flex flex-column justify-content-between"
-                            }
-                          >
+                            }>
                             <div className={matches ? "mr-1 w-100" : "w-100"}>
                               <IduploadAutocomplete
                                 fieldName={"Tipo Documento"}
@@ -361,8 +402,7 @@ export default function Idupload() {
                           ...prevGroupInfo,
                           memberInfo,
                         ])
-                      }
-                    >
+                      }>
                       <Avatar sx={{ bgcolor: green[500] }}>
                         <GroupAddIcon />
                       </Avatar>
@@ -381,8 +421,7 @@ export default function Idupload() {
                       width: "100%",
                       height: "40px",
                       marginBottom: "50px",
-                    }}
-                  >
+                    }}>
                     {submitText}
                   </button>
                 </div>
