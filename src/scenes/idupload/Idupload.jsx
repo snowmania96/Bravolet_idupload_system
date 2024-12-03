@@ -23,6 +23,7 @@ import image from "./check (1).png";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useDebounce } from "@uidotdev/usehooks";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -71,7 +72,6 @@ const GoogleTranslate = (country) => {
               const langSelector = doc.querySelector(
                 "a.VIpgJd-ZVi9od-vH1Gmf-ibnC6b span.text"
               );
-              console.log(langSelector);
               langSelector.click();
             }
           }, 3000); // Give it time to load fully
@@ -137,6 +137,17 @@ export default function Idupload() {
   const navigate = useNavigate();
   const [location, setLocation] = useState("Italy");
   const [modal, setModal] = useState(false);
+  const debouncedFormdata = useDebounce(
+    localStorage.getItem("groupInfo"),
+    3000
+  );
+
+  useEffect(() => {
+    if (debouncedFormdata)
+      axios.post(`${REACT_APP_BASE_URL}/idupload/autosave/${id}`, {
+        debouncedFormdata,
+      });
+  }, [debouncedFormdata]);
 
   //Set media query
   const matches = useMediaQuery("(min-width: 1000px)");
@@ -175,7 +186,6 @@ export default function Idupload() {
         `${REACT_APP_BASE_URL}/idupload/fetch/${id}`
       );
       const location = response.data.location;
-      console.log(location);
       if (location !== "Italy") setLocation(location);
       setReservationInfo(response.data.reservationInfo);
     } catch (err) {
@@ -192,7 +202,6 @@ export default function Idupload() {
     }
   };
 
-  console.log(groupInfo);
   return (
     <div>
       <GoogleTranslate country={location} />
@@ -225,11 +234,19 @@ export default function Idupload() {
                           <Button
                             color="default"
                             onClick={() => {
-                              setGroupInfo((prevGroupInfo) =>
-                                prevGroupInfo.map((member, index) =>
+                              setGroupInfo((prevGroupInfo) => {
+                                localStorage.setItem(
+                                  "groupInfo",
+                                  JSON.stringify(
+                                    prevGroupInfo.map((member, index) =>
+                                      index === 0 ? memberInfo : member
+                                    )
+                                  )
+                                );
+                                return prevGroupInfo.map((member, index) =>
                                   index === 0 ? memberInfo : member
-                                )
-                              );
+                                );
+                              });
                             }}>
                             <CleaaningServicesIcon /> Chiara
                           </Button>
@@ -241,11 +258,19 @@ export default function Idupload() {
                           <Button
                             color="default"
                             onClick={() => {
-                              setGroupInfo((prevGroupInfo) =>
-                                prevGroupInfo.filter(
+                              setGroupInfo((prevGroupInfo) => {
+                                localStorage.setItem(
+                                  "groupInfo",
+                                  JSON.stringify(
+                                    prevGroupInfo.filter(
+                                      (member, index) => index !== id
+                                    )
+                                  )
+                                );
+                                return prevGroupInfo.filter(
                                   (member, index) => index !== id
-                                )
-                              );
+                                );
+                              });
                             }}>
                             <DeleteIcon /> Eliminare
                           </Button>
@@ -406,10 +431,13 @@ export default function Idupload() {
                   <div className="d-flex justify-content-center">
                     <Button
                       onClick={() =>
-                        setGroupInfo((prevGroupInfo) => [
-                          ...prevGroupInfo,
-                          memberInfo,
-                        ])
+                        setGroupInfo((prevGroupInfo) => {
+                          localStorage.setItem(
+                            "groupInfo",
+                            JSON.stringify([...prevGroupInfo, memberInfo])
+                          );
+                          return [...prevGroupInfo, memberInfo];
+                        })
                       }>
                       <Avatar sx={{ bgcolor: green[500] }}>
                         <GroupAddIcon />

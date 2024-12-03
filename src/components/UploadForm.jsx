@@ -173,6 +173,10 @@ export default function UploadForm({
         }
         setMessage("Caricamento riuscito");
         setIdUploaded((prevIdUploaded) => !prevIdUploaded);
+        setGroupInfo((prevGroupInfo) => {
+          localStorage.setItem("groupInfo", JSON.stringify(prevGroupInfo));
+          return prevGroupInfo;
+        });
       }
     } catch (err) {
       if (err.status === 400) setMessage("Tipo di file non valido");
