@@ -207,7 +207,8 @@ export default function Idupload() {
       <GoogleTranslate country={location} />
       <div
         className="jumbotron text-center w-100"
-        style={{ textAlign: "center", height: "250px" }}>
+        style={{ textAlign: "center", height: "250px" }}
+      >
         <Typography className="mt-1" variant="h1">
           Verifica dell'identità
         </Typography>
@@ -220,7 +221,8 @@ export default function Idupload() {
       </div>
       <div
         className="container"
-        style={matches ? { width: "700px" } : { width: "100%" }}>
+        style={matches ? { width: "700px" } : { width: "100%" }}
+      >
         {!loading ? (
           <form className="was-validated" onSubmit={onClickSubmitButton}>
             {idUploaded ? (
@@ -248,6 +250,7 @@ export default function Idupload() {
                                 );
                               });
                             }}>
+
                             <CleaaningServicesIcon /> Chiara
                           </Button>
                         </div>
@@ -272,6 +275,7 @@ export default function Idupload() {
                                 );
                               });
                             }}>
+
                             <DeleteIcon /> Eliminare
                           </Button>
                         </div>
@@ -317,7 +321,8 @@ export default function Idupload() {
                               components={["DatePicker"]}
                               sx={{
                                 paddingTop: "-8px",
-                              }}>
+                              }}
+                            >
                               <DemoItem>
                                 <label className="form-label">
                                   {"Data Nascita"}
@@ -396,7 +401,8 @@ export default function Idupload() {
                               matches
                                 ? "d-flex flex-row justify-content-between"
                                 : "d-flex flex-column justify-content-between"
-                            }>
+                            }
+                          >
                             <div className={matches ? "mr-1 w-100" : "w-100"}>
                               <IduploadAutocomplete
                                 fieldName={"Tipo Documento"}
@@ -457,7 +463,8 @@ export default function Idupload() {
                       width: "100%",
                       height: "40px",
                       marginBottom: "50px",
-                    }}>
+                    }}
+                  >
                     {submitText}
                   </button>
                 </div>
@@ -489,6 +496,7 @@ export default function Idupload() {
           <div
             className="Modal-Background"
             onClick={() => setModal(false)}></div>
+
           <div className="Modal-Content text-center">
             <div className="Modal-Header">
               <span className="Close" onClick={() => setModal(false)}>
@@ -510,6 +518,7 @@ export default function Idupload() {
                   backgroundColor: "#00756a",
                   color: "white",
                 }}
+
                 onClick={onClickYesButton}>
                 SÌ
               </button>
@@ -520,6 +529,7 @@ export default function Idupload() {
                   backgroundColor: "#6c757d",
                   color: "white",
                 }}
+
                 onClick={() => setModal(false)}>
                 NO
               </button>

@@ -229,12 +229,14 @@ export default function UploadForm({
                     />
                     <div
                       className="rentalAgreement ml-1"
-                      onClick={() => setCheckbox(!checkbox)}>
+                      onClick={() => setCheckbox(!checkbox)}
+                    >
                       Accetto il{" "}
                       <a
                         href={`/rentalagreement/${id}`}
                         target="_blank"
-                        rel="noopener noreferrer">
+                        rel="noopener noreferrer"
+                      >
                         Contratto di locazione
                       </a>
                     </div>
@@ -252,7 +254,8 @@ export default function UploadForm({
                         height: "45px",
                         fontSize: "18px",
                       }}
-                      onClick={upload}>
+                      onClick={upload}
+                    >
                       Accetta il contratto per continuare
                     </button>
                   ) : (
@@ -265,7 +268,8 @@ export default function UploadForm({
                         height: "45px",
                         fontSize: "18px",
                       }}
-                      onClick={upload}>
+                      onClick={upload}
+                    >
                       Caricamento
                     </button>
                   )}
