@@ -23,6 +23,7 @@ import image from "./check (1).png";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { useDebounce } from "@uidotdev/usehooks";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -71,7 +72,6 @@ const GoogleTranslate = (country) => {
               const langSelector = doc.querySelector(
                 "a.VIpgJd-ZVi9od-vH1Gmf-ibnC6b span.text"
               );
-              console.log(langSelector);
               langSelector.click();
             }
           }, 3000); // Give it time to load fully
@@ -137,6 +137,17 @@ export default function Idupload() {
   const navigate = useNavigate();
   const [location, setLocation] = useState("Italy");
   const [modal, setModal] = useState(false);
+  const debouncedFormdata = useDebounce(
+    localStorage.getItem("groupInfo"),
+    3000
+  );
+
+  useEffect(() => {
+    if (debouncedFormdata)
+      axios.post(`${REACT_APP_BASE_URL}/idupload/autosave/${id}`, {
+        debouncedFormdata,
+      });
+  }, [debouncedFormdata]);
 
   //Set media query
   const matches = useMediaQuery("(min-width: 1000px)");
@@ -175,7 +186,6 @@ export default function Idupload() {
         `${REACT_APP_BASE_URL}/idupload/fetch/${id}`
       );
       const location = response.data.location;
-      console.log(location);
       if (location !== "Italy") setLocation(location);
       setReservationInfo(response.data.reservationInfo);
     } catch (err) {
@@ -192,13 +202,13 @@ export default function Idupload() {
     }
   };
 
-  console.log(groupInfo);
   return (
     <div>
       <GoogleTranslate country={location} />
       <div
         className="jumbotron text-center w-100"
-        style={{ textAlign: "center", height: "250px" }}>
+        style={{ textAlign: "center", height: "250px" }}
+      >
         <Typography className="mt-1" variant="h1">
           Verifica dell'identità
         </Typography>
@@ -211,7 +221,8 @@ export default function Idupload() {
       </div>
       <div
         className="container"
-        style={matches ? { width: "700px" } : { width: "100%" }}>
+        style={matches ? { width: "700px" } : { width: "100%" }}
+      >
         {!loading ? (
           <form className="was-validated" onSubmit={onClickSubmitButton}>
             {idUploaded ? (
@@ -225,12 +236,21 @@ export default function Idupload() {
                           <Button
                             color="default"
                             onClick={() => {
-                              setGroupInfo((prevGroupInfo) =>
-                                prevGroupInfo.map((member, index) =>
+                              setGroupInfo((prevGroupInfo) => {
+                                localStorage.setItem(
+                                  "groupInfo",
+                                  JSON.stringify(
+                                    prevGroupInfo.map((member, index) =>
+                                      index === 0 ? memberInfo : member
+                                    )
+                                  )
+                                );
+                                return prevGroupInfo.map((member, index) =>
                                   index === 0 ? memberInfo : member
-                                )
-                              );
-                            }}>
+                                );
+                              });
+                            }}
+                          >
                             <CleaaningServicesIcon /> Chiara
                           </Button>
                         </div>
@@ -241,12 +261,21 @@ export default function Idupload() {
                           <Button
                             color="default"
                             onClick={() => {
-                              setGroupInfo((prevGroupInfo) =>
-                                prevGroupInfo.filter(
+                              setGroupInfo((prevGroupInfo) => {
+                                localStorage.setItem(
+                                  "groupInfo",
+                                  JSON.stringify(
+                                    prevGroupInfo.filter(
+                                      (member, index) => index !== id
+                                    )
+                                  )
+                                );
+                                return prevGroupInfo.filter(
                                   (member, index) => index !== id
-                                )
-                              );
-                            }}>
+                                );
+                              });
+                            }}
+                          >
                             <DeleteIcon /> Eliminare
                           </Button>
                         </div>
@@ -292,7 +321,8 @@ export default function Idupload() {
                               components={["DatePicker"]}
                               sx={{
                                 paddingTop: "-8px",
-                              }}>
+                              }}
+                            >
                               <DemoItem>
                                 <label className="form-label">
                                   {"Data Nascita"}
@@ -371,7 +401,8 @@ export default function Idupload() {
                               matches
                                 ? "d-flex flex-row justify-content-between"
                                 : "d-flex flex-column justify-content-between"
-                            }>
+                            }
+                          >
                             <div className={matches ? "mr-1 w-100" : "w-100"}>
                               <IduploadAutocomplete
                                 fieldName={"Tipo Documento"}
@@ -406,11 +437,15 @@ export default function Idupload() {
                   <div className="d-flex justify-content-center">
                     <Button
                       onClick={() =>
-                        setGroupInfo((prevGroupInfo) => [
-                          ...prevGroupInfo,
-                          memberInfo,
-                        ])
-                      }>
+                        setGroupInfo((prevGroupInfo) => {
+                          localStorage.setItem(
+                            "groupInfo",
+                            JSON.stringify([...prevGroupInfo, memberInfo])
+                          );
+                          return [...prevGroupInfo, memberInfo];
+                        })
+                      }
+                    >
                       <Avatar sx={{ bgcolor: green[500] }}>
                         <GroupAddIcon />
                       </Avatar>
@@ -429,7 +464,8 @@ export default function Idupload() {
                       width: "100%",
                       height: "40px",
                       marginBottom: "50px",
-                    }}>
+                    }}
+                  >
                     {submitText}
                   </button>
                 </div>
@@ -456,6 +492,52 @@ export default function Idupload() {
           </div>
         )}
       </div>
+      {modal && (
+        <div className="Modal">
+          <div
+            className="Modal-Background"
+            onClick={() => setModal(false)}
+          ></div>
+          <div className="Modal-Content text-center">
+            <div className="Modal-Header">
+              <span className="Close" onClick={() => setModal(false)}>
+                &times;
+              </span>
+            </div>
+
+            <div className="Modal-Body">
+              <h4 className="mt-4">
+                Sei sicuro di aver aggiunto tutti gli invitati a questo modulo?
+              </h4>
+            </div>
+
+            <div className="Modal-Footer mt-2">
+              <button
+                className="btn mr-2 mt-2"
+                style={{
+                  width: "75px",
+                  backgroundColor: "#00756a",
+                  color: "white",
+                }}
+                onClick={onClickYesButton}
+              >
+                SÌ
+              </button>
+              <button
+                className="btn ml-2 mt-2"
+                style={{
+                  width: "75px",
+                  backgroundColor: "#6c757d",
+                  color: "white",
+                }}
+                onClick={() => setModal(false)}
+              >
+                NO
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <ToastContainer />
     </div>
   );
