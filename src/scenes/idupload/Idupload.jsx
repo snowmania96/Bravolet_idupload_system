@@ -249,8 +249,8 @@ export default function Idupload() {
                                   index === 0 ? memberInfo : member
                                 );
                               });
-                            }}
-                          >
+                            }}>
+
                             <CleaaningServicesIcon /> Chiara
                           </Button>
                         </div>
@@ -274,8 +274,8 @@ export default function Idupload() {
                                   (member, index) => index !== id
                                 );
                               });
-                            }}
-                          >
+                            }}>
+
                             <DeleteIcon /> Eliminare
                           </Button>
                         </div>
@@ -444,8 +444,7 @@ export default function Idupload() {
                           );
                           return [...prevGroupInfo, memberInfo];
                         })
-                      }
-                    >
+                      }>
                       <Avatar sx={{ bgcolor: green[500] }}>
                         <GroupAddIcon />
                       </Avatar>
@@ -496,8 +495,8 @@ export default function Idupload() {
         <div className="Modal">
           <div
             className="Modal-Background"
-            onClick={() => setModal(false)}
-          ></div>
+            onClick={() => setModal(false)}></div>
+
           <div className="Modal-Content text-center">
             <div className="Modal-Header">
               <span className="Close" onClick={() => setModal(false)}>
@@ -519,8 +518,8 @@ export default function Idupload() {
                   backgroundColor: "#00756a",
                   color: "white",
                 }}
-                onClick={onClickYesButton}
-              >
+
+                onClick={onClickYesButton}>
                 SÌ
               </button>
               <button
@@ -530,8 +529,8 @@ export default function Idupload() {
                   backgroundColor: "#6c757d",
                   color: "white",
                 }}
-                onClick={() => setModal(false)}
-              >
+
+                onClick={() => setModal(false)}>
                 NO
               </button>
             </div>
